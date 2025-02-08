@@ -45,13 +45,14 @@ class SignUpScreen extends StatelessWidget {
                     labelText: 'Username',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide()
                     ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter username"; // Return the error message
+                      return "Please enter username";
                     }
-                    return null; // Return null if validation passes
+                    return null;
                   },
                 ),
                 SizedBox(height: 15),
@@ -65,9 +66,9 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter Email"; // Return the error message
+                      return "Please enter Email";
                     }
-                    return null; // Return null if validation passes
+                    return null;
                   },
                 ),
                 SizedBox(height: 15),
@@ -81,9 +82,9 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter Phone"; // Return the error message
+                      return "Please enter Phone";
                     }
-                    return null; // Return null if validation passes
+                    return null;
                   },
                 ),
                 SizedBox(height: 15),
@@ -97,9 +98,9 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter Password"; // Return the error message
+                      return "Please enter Password"; //
                     }
-                    return null; // Return null if validation passes
+                    return null; //
                   },
                 ),
                 SizedBox(height: 15),
@@ -113,9 +114,9 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter Confirm Password"; // Return the error message
+                      return "Please enter Confirm Password";
                     }
-                    return null; // Return null if validation passes
+                    return null;
                   },
                 ),
                 SizedBox(height: 30),

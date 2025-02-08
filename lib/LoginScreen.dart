@@ -1,4 +1,5 @@
 import 'package:demo/SignUpScreen.dart';
+import 'package:demo/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -46,9 +47,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Welcome back! Glad to see you, Again!",
+                    Text("Welcome To HairHeaven",
                         style: TextStyle(
                             fontSize: 28, fontWeight: FontWeight.bold)),
+
                     SizedBox(
                       height: 16,
                     ),
@@ -123,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     Align(
                         alignment: Alignment.centerRight,
-                        child: Text('Forgot password')),
+                        child: Text('Forgot password?')),
                     SizedBox(
                       height: 16,
                     ),
@@ -190,6 +192,9 @@ class _LoginScreenState extends State<LoginScreen> {
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 2);
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (BuildContext context) => DashboardPage()),
+              (Route<dynamic> route) => false);
     }
   }
 }

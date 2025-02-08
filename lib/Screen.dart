@@ -1,9 +1,8 @@
+
 import 'package:demo/LoginScreen.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -32,15 +31,18 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Lottie.asset("assets/image/ani.json"),
-                Text("Hair Heaven"),
-              ],
+        body:  Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            color: Color(0xFF1D1A25), // Background color
+          ),
+          child: Center(
+            child: Image.asset(
+              'assets/image/js.jpeg', // Replace with your logo image path
+              fit: BoxFit.fill, // Ensures the logo scales nicely
             ),
+          ),
         ),
     );
   }
