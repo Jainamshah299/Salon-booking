@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
           child: Center(
             child: Image.asset(
-              'assets/image/js.jpeg', // Replace with your logo image path
+              'assets/image/logo.jpeg', // Replace with your logo image path
               fit: BoxFit.fill, // Ensures the logo scales nicely
             ),
           ),
