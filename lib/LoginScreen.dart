@@ -1,13 +1,16 @@
+import 'dart:convert';
+import 'dart:ui';
+import 'package:demo/Admin/AdminDashboardPage.dart';
+import 'package:demo/CommonWidget/APIConst.dart';
+import 'package:demo/Salon_Manager/SalonManagerDashboard.dart';
 import 'package:demo/SignUpScreen.dart';
 import 'package:demo/dashboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -17,147 +20,126 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
   final formKey = new GlobalKey<FormState>();
   bool hideShowPassword = true;
+  var logindata;
+  var data;
+  bool isLoading = false;
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-            size: 20,
-            color: Colors.black,
-          ),
+      body:  isLoading
+          ? Center(
+        child: CircularProgressIndicator(
+          color: Colors.greenAccent,
         ),
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-      ),
-      body: Column(
+      )
+          :Stack(
+        fit: StackFit.expand,
         children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Welcome To HairHeaven",
-                        style: TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.bold)),
+          // Background Image
+          Image.asset(
+            "assets/image/welcome.jpg", // Change to your image
+            fit: BoxFit.cover,
+          ),
 
-                    SizedBox(
-                      height: 16,
-                    ),
-                    TextFormField(
-                      controller: nameController,
-                      validator: (val) {
-                        if (val!.isEmpty) {
-                          return "Please enter name";
-                        }
-                      },
-                      decoration: const InputDecoration(
-                          contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                          fillColor: Color(0xFFF5F5F5),
-                          hintText: "Enter the name",
+          // Blur Effect
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              // Adjust blur intensity
+              child: Container(
+                color: Colors.black.withOpacity(0.3), // Dark overlay
+              ),
+            ),
+          ),
+
+          // Login Form
+          Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              child: Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2), // Semi-transparent form
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+
+                      // Email Field
+                      TextField(
+                        controller: nameController,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: "Email",
+                          hintStyle: TextStyle(color: Colors.white70),
                           filled: true,
-                          enabledBorder: OutlineInputBorder(
+                          fillColor: Colors.white.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
                           ),
-                          errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.redAccent)),
-                          border:
-                          OutlineInputBorder(borderSide: BorderSide.none)),
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: hideShowPassword,
-                      validator: (value) {
-                        RegExp regex = RegExp(
-                            r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-                        if (value!.isEmpty) {
-                          return "Please enter password";
-                        } else if (!regex.hasMatch(value)) {
-                          return "Please enter valid password";
-                        }
-                      },
-                      decoration: InputDecoration(
-                          contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                          suffixIcon: GestureDetector(
-                              onTap: () {
-                                if (hideShowPassword) {
-                                  setState(() {
-                                    hideShowPassword = false;
-                                  });
-                                } else {
-                                  setState(() {
-                                    hideShowPassword = true;
-                                  });
-                                }
-                              },
-                              child: Icon(hideShowPassword
-                                  ? Icons.remove_red_eye
-                                  : Icons.hide_source_outlined)),
-                          fillColor: Color(0xFFF5F5F5),
-                          hintText: "Enter the password",
+                        ),
+                      ),
+                      SizedBox(height: 15),
+
+                      // Password Field
+                      TextField(
+                        controller: passwordController,
+                        obscureText: true,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: "Password",
+                          hintStyle: TextStyle(color: Colors.white70),
                           filled: true,
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(45)
+                          fillColor: Colors.white.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
                           ),
-                          errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.redAccent)),
-                          border:
-                          OutlineInputBorder(borderSide: BorderSide.none)),
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: Text('Forgot password?')),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                          child: Text("Login".toUpperCase(),
-                              style: TextStyle(fontSize: 14)),
-                          style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.deepPurple),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(6)),
-                                      side: BorderSide(
-                                          color: Colors.deepPurple)))),
-                          onPressed: () {
-                            _submit();
-                          }),
-                    ),
-                  ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
+
+                      // Login Button
+                      ElevatedButton(
+                        onPressed: () {
+                          _submit();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          padding:
+                          EdgeInsets.symmetric(vertical: 12, horizontal: 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          "Login",
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          Align(
+            alignment: Alignment.bottomCenter,
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -165,16 +147,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   MaterialPageRoute(builder: (context) => SignUpScreen()),
                 );
               },
-              child: const Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(text: "Don't have an account? "),
-                    TextSpan(
-                      text: 'Sign Up',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.green),
-                    ),
-                  ],
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  "Don't have an account? SignUp",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ),
@@ -187,14 +164,63 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _submit() async {
     final form = formKey.currentState;
     if (form!.validate()) {
-      Fluttertoast.showToast(
-          msg: "login successfully",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 2);
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => DashboardPage()),
-              (Route<dynamic> route) => false);
+      setState(() {
+        isLoading = true;
+      });
+      final login_url = Uri.parse("${ApiConst.base_url}checklogin.php");
+      final response = await http.post(login_url, headers: {
+        'Cookie': ApiConst.cookie,
+        'User-Agent': ApiConst.user_agent
+      }, body: {
+        "email": nameController.text,
+        "password": passwordController.text
+      });
+      print(response.body);
+      if (response.statusCode == 200) {
+        logindata = jsonDecode(response.body);
+        data = jsonDecode(response.body)['user'];
+        print(logindata);
+        setState(() {
+          isLoading = false;
+        });
+        if (logindata['error'] == false) {
+          SharedPreferences setpreference =
+          await SharedPreferences.getInstance();
+          setpreference.setString('uid', data['uid'].toString());
+          setpreference.setString('uname', data['uname'].toString());
+          setpreference.setString('urole', data['urole'].toString());
+          if (setpreference.getString('urole') != null &&
+              setpreference.getString('urole') == "1") {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (BuildContext context) => DashboardPage()),
+                    (Route<dynamic> route) => false);
+          }else if (setpreference.getString('urole') != null &&
+              setpreference.getString('urole') == "2"){
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (BuildContext context) => SalonManagerDashboard()),
+                    (Route<dynamic> route) => false);
+          } else {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (BuildContext context) => AdminDashboardPage()),
+                    (Route<dynamic> route) => false);
+          }
+
+          Fluttertoast.showToast(
+              msg: logindata['message'].toString(),
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 2);
+        } else {
+          Fluttertoast.showToast(
+              msg: logindata['message'].toString(),
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 2);
+        }
+      }
     }
   }
 }

@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     var duration = Duration(seconds: 5);
     return Timer(duration, () {
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => const LoginScreen()),
+          MaterialPageRoute(builder: (BuildContext context) => LoginScreen()),
               (Route<dynamic> route) => false);
     });
   }
