@@ -1,4 +1,7 @@
 
+import 'package:demo/SalonDetailPage.dart';
+import 'package:demo/Slotbook.dart';
+import 'package:demo/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/loginScreen.dart';
 import 'package:demo/Screen.dart';
@@ -19,7 +22,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const SplashScreen(),
+        home: SplashScreen(),
         );
   }
 }

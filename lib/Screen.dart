@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
           width: double.infinity,
           height: double.infinity,
           decoration: const BoxDecoration(
-            color: Color(0xFF1D1A25), // Background color
+            color: Colors.white, // Background color
           ),
           child: Center(
             child: Image.asset(

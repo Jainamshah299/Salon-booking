@@ -24,10 +24,11 @@ class _HomePageState extends State<HomePage> {
   var names = ["name1", "name2", "name3", "name4" "name5 "];
   var price = ["9876543120", "23456789089", "2345678908", "2345678908"];
   var image = [
-    "https://th.bing.com/th/id/OIP.S4H9ElBucdIiWmD45a9sMAHaK-?rs=1&pid=ImgDetMain",
-    "https://th.bing.com/th/id/OIP.S4H9ElBucdIiWmD45a9sMAHaK-?rs=1&pid=ImgDetMain",
-    "https://th.bing.com/th/id/OIP.S4H9ElBucdIiWmD45a9sMAHaK-?rs=1&pid=ImgDetMain",
-    "https://th.bing.com/th/id/OIP.S4H9ElBucdIiWmD45a9sMAHaK-?rs=1&pid=ImgDetMain"
+    "assets/image/salonimage_1.jpg",
+    "assets/image/salonimage_1.jpg",
+    "assets/image/salonimage_1.jpg",
+    "assets/image/salonimage_1.jpg",
+    "assets/image/salonimage_1.jpg",
   ];
 
 

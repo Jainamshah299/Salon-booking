@@ -1,3 +1,4 @@
+import 'package:demo/Slotbook.dart';
 import 'package:flutter/material.dart';
 
 class Salondetailpage extends StatefulWidget {
@@ -8,12 +9,24 @@ class Salondetailpage extends StatefulWidget {
 }
 
 class _SalondetailpageState extends State<Salondetailpage> {
-  var service = ["haircuts"];
-  var image = ["assets/image/Rectangle_3.png"];
-  var button = ["ADD"];
-  bool isAdded = false;
+  final List<String> service = ["Haircuts", "Shaving", "Facial", "Massage"];
+  final List<String> image = [
+    "assets/image/Rectangle_3.png",
+    "assets/image/beard.png",
+    "assets/image/Rectangle_3.png",
+    "assets/image/beard.png"
+  ];
+  final List<int> price = [200, 150, 300, 500];
+
+  Map<int, bool> isSelected = {};
+
   @override
   Widget build(BuildContext context) {
+    int totalPrice = 0;
+    isSelected.forEach((key, value) {
+      if (value) totalPrice += price[key];
+    });
+
     return Scaffold(
       body: Column(
         children: [
@@ -24,13 +37,7 @@ class _SalondetailpageState extends State<Salondetailpage> {
                   Stack(
                     children: [
                       Image.asset(
-                        'assets/image/Rectangle_3.png',
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        height: 306,
-                      ),
-                      Image.asset(
-                        'assets/image/Rectangle_3.png',
+                        'assets/image/aesthetic_salon.jpg',
                         width: double.infinity,
                         fit: BoxFit.cover,
                         height: 306,
@@ -39,56 +46,64 @@ class _SalondetailpageState extends State<Salondetailpage> {
                         left: 10,
                         bottom: 10,
                         child: Text(
-                          "Salon name",
+                          "Woodlands Hill Salon",
                           style: TextStyle(color: Colors.white, fontSize: 24),
                         ),
                       )
                     ],
                   ),
-                  Container(
-                    height: 20,
-                    child: Text("hdf"),
+                  Positioned(
+                    left: 10,
+                    bottom: 10,
+                    child:Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon:Icon(Icons.call,color: Colors.grey,size: 30),
+                          onPressed: (){},),
+                        IconButton(
+                          icon:Icon(Icons.location_on,color: Colors.grey,size: 30),
+                          onPressed: (){},),
+                        IconButton(
+                          icon:Icon(Icons.share,color: Colors.grey,size: 30),
+                          onPressed: (){},),
+                      ],
+                    ),
                   ),
-                  Column(
-                    children: [
-                      ListView.builder(
-                          itemCount: service.length,
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              leading: Image.asset(
-                                image[index],
-                                fit: BoxFit.fill,
-                              ),
-                              title: Text(service[index]),
-                              trailing: ElevatedButton.icon(
-                                  onPressed: () {
-                                    if(isAdded){
-                                      setState(() {
-                                        isAdded=false;
-
-                                      });
-                                    }
-                                    else{
-                                      setState(() {
-                                        isAdded=true;
-
-                                      });
-
-                                    }
 
 
-                                  }, label: Text("ADD")),
-                            );
-                          })
-                    ],
+
+                  ListView.builder(
+                    itemCount: service.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: Image.asset(
+                          image[index],
+                          fit: BoxFit.fill,
+                          width: 50,
+                          height: 50,
+                        ),
+
+                        title: Text(service[index]),
+                        subtitle: Text("₹${price[index]}"),
+                        trailing: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              isSelected[index] = !(isSelected[index] ?? false);
+                            });
+                          },
+                          child: Text(isSelected[index] == true ? "REMOVE" : "ADD"),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
             ),
           ),
-          if(isAdded)...[
+          if (isSelected.containsValue(true))
             Container(
               margin: EdgeInsets.all(16),
               padding: EdgeInsets.all(16),
@@ -100,37 +115,28 @@ class _SalondetailpageState extends State<Salondetailpage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        height: 34,
-                        width: 34,
-                        margin: EdgeInsets.only(right: 16),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                        ),
-                        child: Text("2",style: TextStyle(color: Colors.white),),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text("449",style: TextStyle(color: Colors.white)),
-                          Text("plus taxes",style: TextStyle(color: Colors.white)),
-                        ],)
+                      Text("Total: ₹$totalPrice", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+
                     ],
                   ),
-                  Text("Continue",style: TextStyle(color: Colors.white)),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Slotbook()),
+                      );
+                    },
+                    child: Text("Continue", style: TextStyle(color: Colors.white, fontSize: 16)),
+                  ),
                 ],
-
               ),
             ),
-          ],
-
         ],
       ),
     );
   }
+
 }

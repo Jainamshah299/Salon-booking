@@ -12,13 +12,37 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(""),
+      appBar: AppBar(title: Text("Profile"),
       ),
       body:SingleChildScrollView(
         child: Column(
           children: [
-            ListTile(leading: Icon(Icons.settings),title:Text("setting "))
+            Container(
+              padding: EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: AssetImage(''),
+                  ),
+                  SizedBox(width: 15),
+                  Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('User Name',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                      Divider(),
+
+
+
+                    ],
+                  ))
+                ],
+              ),
+            )
           ],
+
+
+
         ),
       )
 

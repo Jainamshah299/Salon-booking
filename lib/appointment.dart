@@ -11,6 +11,9 @@ class appointment extends StatefulWidget {
 class _appointmentState extends State<appointment> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(title:Text("Your Bookings"),)
+
+    );
   }
 }
