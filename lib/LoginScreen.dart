@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           // Background Image
           Image.asset(
-            "assets/image/welcome.jpg", // Change to your image
+            "assets/image/background_image.jpg", // Change to your image
             fit: BoxFit.cover,
           ),
 
@@ -199,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
               setpreference.getString('urole') == "2"){
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                    builder: (BuildContext context) => SalonManagerDashboard()),
+                    builder: (BuildContext context) => DashboardPage()),
                     (Route<dynamic> route) => false);
           } else {
             Navigator.of(context).pushAndRemoveUntil(

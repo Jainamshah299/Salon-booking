@@ -18,14 +18,11 @@ class _SalondetailpageState extends State<Salondetailpage> {
   ];
   final List<int> price = [200, 150, 300, 500];
 
-  Map<int, bool> isSelected = {};
+  int? selectedServiceIndex;
 
   @override
   Widget build(BuildContext context) {
-    int totalPrice = 0;
-    isSelected.forEach((key, value) {
-      if (value) totalPrice += price[key];
-    });
+    int totalPrice = selectedServiceIndex != null ? price[selectedServiceIndex!] : 0;
 
     return Scaffold(
       body: Column(
@@ -52,27 +49,23 @@ class _SalondetailpageState extends State<Salondetailpage> {
                       )
                     ],
                   ),
-                  Positioned(
-                    left: 10,
-                    bottom: 10,
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          icon:Icon(Icons.call,color: Colors.grey,size: 30),
-                          onPressed: (){},),
-                        IconButton(
-                          icon:Icon(Icons.location_on,color: Colors.grey,size: 30),
-                          onPressed: (){},),
-                        IconButton(
-                          icon:Icon(Icons.share,color: Colors.grey,size: 30),
-                          onPressed: (){},),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.call, color: Colors.grey, size: 30),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.location_on, color: Colors.grey, size: 30),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.share, color: Colors.grey, size: 30),
+                        onPressed: () {},
+                      ),
+                    ],
                   ),
-
-
-
                   ListView.builder(
                     itemCount: service.length,
                     shrinkWrap: true,
@@ -85,16 +78,18 @@ class _SalondetailpageState extends State<Salondetailpage> {
                           width: 50,
                           height: 50,
                         ),
-
                         title: Text(service[index]),
                         subtitle: Text("₹${price[index]}"),
                         trailing: ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              isSelected[index] = !(isSelected[index] ?? false);
+                              selectedServiceIndex =
+                              selectedServiceIndex == index ? null : index;
                             });
                           },
-                          child: Text(isSelected[index] == true ? "REMOVE" : "ADD"),
+                          child: Text(
+                            selectedServiceIndex == index ? "REMOVE" : "SELECT",
+                          ),
                         ),
                       );
                     },
@@ -103,7 +98,7 @@ class _SalondetailpageState extends State<Salondetailpage> {
               ),
             ),
           ),
-          if (isSelected.containsValue(true))
+          if (selectedServiceIndex != null)
             Container(
               margin: EdgeInsets.all(16),
               padding: EdgeInsets.all(16),
@@ -115,12 +110,9 @@ class _SalondetailpageState extends State<Salondetailpage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Total: ₹$totalPrice", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-
-                    ],
+                  Text(
+                    "Total: ₹$totalPrice",
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -129,7 +121,10 @@ class _SalondetailpageState extends State<Salondetailpage> {
                         MaterialPageRoute(builder: (context) => Slotbook()),
                       );
                     },
-                    child: Text("Continue", style: TextStyle(color: Colors.white, fontSize: 16)),
+                    child: Text(
+                      "Continue",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
                   ),
                 ],
               ),
@@ -138,5 +133,4 @@ class _SalondetailpageState extends State<Salondetailpage> {
       ),
     );
   }
-
 }

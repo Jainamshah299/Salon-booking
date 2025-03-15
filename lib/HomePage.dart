@@ -21,14 +21,15 @@ class _HomePageState extends State<HomePage> {
     'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
     'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
   ];
-  var names = ["name1", "name2", "name3", "name4" "name5 "];
-  var price = ["9876543120", "23456789089", "2345678908", "2345678908"];
+  var names = ["Glowup", "Belle Beauty", "Graceful Curls", "The Beauty Gallery" ,"name5","name6"];
+  var contact = ["9876543120", "23456789089", "2345678908", "2345678908","1234567890","154155600"];
   var image = [
     "assets/image/salonimage_1.jpg",
     "assets/image/salonimage_1.jpg",
     "assets/image/salonimage_1.jpg",
     "assets/image/salonimage_1.jpg",
     "assets/image/salonimage_1.jpg",
+    "assets/image/salonimage_1.jpg"
   ];
 
 
@@ -37,7 +38,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        elevation: 0,
+        elevation: 2,
         backgroundColor: Colors.white,
         title: Row(
           children: [
@@ -46,12 +47,12 @@ class _HomePageState extends State<HomePage> {
               height: 40,
               width: 40,
             ),
+            SizedBox(width: 8,),
             Text(
               'Hair Heaven',
-              style: TextStyle(color: Colors.black, fontSize: 20),
+              style: TextStyle(color: Colors.black, fontSize: 22,fontWeight: FontWeight.bold),
             ),
-            Spacer(),
-            Icon(Icons.notifications, color: Colors.black),
+
           ],
         ),
       ),
@@ -153,6 +154,7 @@ class _HomePageState extends State<HomePage> {
                       MaterialPageRoute(builder: (context) => Salondetailpage()),
                     );
 
+
                   },
                     child: Container(
                       margin: EdgeInsets.only(top: 16, bottom: 16),
@@ -184,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                                     fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                price[index],
+                                contact[index],
                                 style:
                                 TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold),
@@ -202,13 +204,13 @@ class _HomePageState extends State<HomePage> {
                               )
                             ],
                           ),
+
                         ],
                       ),
                     ),
                   );
                 },
               ),
-
             ],
           ),
         ),

@@ -36,7 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            "assets/image/welcome.jpg", // Change to your image
+            "assets/image/background_image.jpg", // Change to your image
             fit: BoxFit.cover,
           ),
           // Blur Effect
@@ -77,6 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           borderSide: BorderSide()),
+
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {

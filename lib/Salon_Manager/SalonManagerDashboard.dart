@@ -1,15 +1,150 @@
+import 'package:demo/LoginScreen.dart';
+import 'package:demo/Salon_Manager/DetailScreen.dart';
+import 'package:demo/Salon_Manager/addservice.dart';
 import 'package:flutter/material.dart';
 
-class SalonManagerDashboard extends StatefulWidget {
-  const SalonManagerDashboard({super.key});
-
-  @override
-  State<SalonManagerDashboard> createState() => _SalonManagerDashboardState();
-}
-
-class _SalonManagerDashboardState extends State<SalonManagerDashboard> {
+class Salonmanagerdashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SelectionScreen(),
+    );
+  }
+}
+
+class SelectionScreen extends StatelessWidget {
+  final List<Map<String, dynamic>> stores = [
+    {
+      'name': 'ADD DETAILS',
+      'description': 'ADD SALON NAME, ADDRESS',
+      'color': Colors.pink.shade100,
+      'route': Detailscreen(),
+    },
+    {
+      'name': 'ADD SERVICE',
+      'description': 'ADD SERVICE, STYLIST,UPLOAD IMAGE, PRICE, DURATION',
+      'color': Colors.lime.shade300,
+      'route' : addservice(),
+    },
+    {
+      'name': 'APPOINTMENT',
+      'description': 'VIEW APPOINTMENT',
+      'color': Color(0xFFFAFFC5),
+    },
+    {
+      'name': 'FEEDBACK',
+      'description': 'MANAGE FEEDBACK',
+      'color': Colors.black12,
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('ADD'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: Colors.black,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView.builder(
+          itemCount: stores.length,
+          itemBuilder: (context, index) {
+            final store = stores[index];
+            return StoreCard(
+              name: store['name'],
+              description: store['description'],
+              color: store['color'],
+              onTap: store.containsKey('route')
+                  ? () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => store['route'],
+                  ),
+                );
+              }
+                  : null, // Allow null values for onTap
+            );
+          },
+        ),
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            ListTile(
+              leading: Icon(Icons.logout, color: Colors.red),
+              title: Text("Logout"),
+              onTap: (){
+                showDialog(
+                    context: context,
+                    builder:(context) =>AlertDialog(
+                      title: Text("Logout"),
+                      content: Text("Are you sure want to log out?"),
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text("Cancel")
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                              MaterialPageRoute(builder: (context) => LoginScreen()),
+                              (route) => false,
+                              );
+                            },
+                          child: Text("Logout"),
+
+                        ),
+
+
+                      ],
+                    )) ;
+              },
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class StoreCard extends StatelessWidget {
+  final String name;
+  final String description;
+  final VoidCallback? onTap; // Change VoidCallback to VoidCallback?
+  final Color color;
+
+  StoreCard({
+    required this.name,
+    required this.description,
+    required this.color,
+    this.onTap, // Allow null values for onTap
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap ?? () {},
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: ListTile(
+          contentPadding: EdgeInsets.all(16),
+          title: Text(name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          subtitle: Text(description, style: TextStyle(fontSize: 14)),
+        ),
+      ),
+    );
   }
 }

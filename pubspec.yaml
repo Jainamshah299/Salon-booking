@@ -33,13 +33,14 @@ dependencies:
   lottie: ^2.6.2
   fluttertoast: 8.1.4
   carousel_slider: ^5.0.0
-  image_picker: ^1.1.2
+  image_picker: ^1.0.4
   intl: ^0.20.2
   flutter_credit_card: ^4.0.1
   http: ^1.2.2
   shared_preferences: ^2.3.3
   mime: ^1.0.3
   http_parser: ^4.0.2
+
 
 
   # The following adds the Cupertino Icons font to your application.
