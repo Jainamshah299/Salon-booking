@@ -186,9 +186,9 @@ class _LoginScreenState extends State<LoginScreen> {
         if (logindata['error'] == false) {
           SharedPreferences setpreference =
           await SharedPreferences.getInstance();
-          setpreference.setString('uid', data['uid'].toString());
-          setpreference.setString('uname', data['uname'].toString());
-          setpreference.setString('urole', data['urole'].toString());
+          setpreference.setString('uid', data['id'].toString());
+          setpreference.setString('uname', data['name'].toString());
+          setpreference.setString('urole', data['role'].toString());
           if (setpreference.getString('urole') != null &&
               setpreference.getString('urole') == "1") {
             Navigator.of(context).pushAndRemoveUntil(
