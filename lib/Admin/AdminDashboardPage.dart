@@ -1,3 +1,7 @@
+import 'package:demo/Admin/complain.dart';
+import 'package:demo/Admin/history.dart';
+import 'package:demo/Admin/salon.dart';
+import 'package:demo/Admin/user.dart';
 import 'package:flutter/material.dart';
 
 class AdminDashboardPage extends StatefulWidget {
@@ -15,25 +19,25 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     'name': 'User',
     'description': 'ADD SALON NAME, ADDRESS',
     'color': Colors.pink.shade100,
-    'route': Detailscreen(),
+    'route':userscreen(),
   },
     {
       'name': 'Salon',
       'description': 'ADD SALON NAME, ADDRESS',
       'color': Colors.pink.shade100,
-      'route': Detailscreen(),
+      'route': salonscreen(),
     },
     {
       'name': 'Booking history',
       'description': 'ADD SALON NAME, ADDRESS',
       'color': Colors.pink.shade100,
-      'route': Detailscreen(),
+      'route': historyscreen(),
     },
     {
       'name': 'Complain',
       'description': 'ADD SALON NAME, ADDRESS',
       'color': Colors.pink.shade100,
-      'route': Detailscreen(),
+      'route': complainscreen(),
     },
   ];
   @override
