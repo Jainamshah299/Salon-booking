@@ -1,3 +1,4 @@
+import 'package:demo/FeedbackScreen.dart';
 import 'package:demo/LoginScreen.dart';
 import 'package:demo/Salon_Manager/DetailScreen.dart';
 import 'package:demo/Salon_Manager/addservice.dart';
@@ -36,6 +37,7 @@ class SelectionScreen extends StatelessWidget {
       'name': 'FEEDBACK',
       'description': 'MANAGE FEEDBACK',
       'color': Colors.black12,
+      'route' :RatingScreen()
     },
   ];
 

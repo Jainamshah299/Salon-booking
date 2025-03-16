@@ -172,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         children: [
                           ClipRRect(
-                            child: Image.network(image[index], height: 200,
+                            child: Image.asset(image[index], height: 200,
                               width: double.infinity, fit: BoxFit.fill,),
                             borderRadius: BorderRadius.circular(16),
                           ),

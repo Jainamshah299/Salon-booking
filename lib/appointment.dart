@@ -77,7 +77,7 @@ class BookingHistoryScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FeedbackScreen(),
+                        builder: (context) => RatingScreen(),
                       ),
                     );
                   },
