@@ -1,6 +1,7 @@
 import 'package:demo/FeedbackScreen.dart';
 import 'package:demo/LoginScreen.dart';
 import 'package:demo/Salon_Manager/DetailScreen.dart';
+import 'package:demo/Salon_Manager/ManagerServiceListPage.dart';
 import 'package:demo/Salon_Manager/addservice.dart';
 import 'package:demo/Salon_Manager/salonappointment.dart';
 import 'package:demo/Salon_Manager/viewreview.dart';
@@ -29,7 +30,7 @@ class SelectionScreen extends StatelessWidget {
       'name': 'ADD SERVICE',
       'description': 'ADD SERVICE, STYLIST,UPLOAD IMAGE, PRICE, DURATION',
       'color': Colors.lime.shade300,
-      'route' : addservice(),
+      'route' : Managerservicelistpage(),
     },
     {
       'name': 'APPOINTMENT',

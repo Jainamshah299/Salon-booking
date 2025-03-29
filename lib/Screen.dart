@@ -1,8 +1,13 @@
 
+import 'package:demo/Admin/AdminDashboardPage.dart';
 import 'package:demo/LoginScreen.dart';
+import 'package:demo/Salon_Manager/SalonManagerDashboard.dart';
+import 'package:demo/dashboard.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -22,10 +27,36 @@ class _SplashScreenState extends State<SplashScreen> {
   startTimer() {
     var duration = Duration(seconds: 5);
     return Timer(duration, () {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => LoginScreen()),
-              (Route<dynamic> route) => false);
+      checkFirstSeen();
     });
+  }
+
+  Future checkFirstSeen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+   if (prefs.getString('uid') != null) {
+        if (prefs.getString('urole') != null &&
+            prefs.getString('urole') == "0") {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (BuildContext context) => AdminDashboardPage()),
+                  (Route<dynamic> route) => false);
+        } else if (prefs.getString('urole') != null &&
+            prefs.getString('urole') == "1") {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (BuildContext context) => DashboardPage()),
+                  (Route<dynamic> route) => false);
+        } else {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (BuildContext context) => Salonmanagerdashboard()),
+                  (Route<dynamic> route) => false);
+        }
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (BuildContext context) => LoginScreen()),
+                (Route<dynamic> route) => false);
+      }
   }
 
   @override

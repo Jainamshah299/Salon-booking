@@ -1,11 +1,4 @@
-
-import 'package:demo/Admin/AdminDashboardPage.dart';
-import 'package:demo/SalonDetailPage.dart';
-import 'package:demo/Salon_Manager/SalonManagerDashboard.dart';
-import 'package:demo/Slotbook.dart';
-import 'package:demo/dashboard.dart';
 import 'package:flutter/material.dart';
-import 'package:demo/loginScreen.dart';
 import 'package:demo/Screen.dart';
 
 void main() {
@@ -24,7 +17,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: Salonmanagerdashboard(),
+        home: SplashScreen(),
         );
   }
 }

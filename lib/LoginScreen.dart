@@ -199,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
               setpreference.getString('urole') == "2"){
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                    builder: (BuildContext context) => DashboardPage()),
+                    builder: (BuildContext context) => Salonmanagerdashboard()),
                     (Route<dynamic> route) => false);
           } else {
             Navigator.of(context).pushAndRemoveUntil(

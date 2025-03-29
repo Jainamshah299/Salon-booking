@@ -182,7 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         "password": passwordController.text,
         "phone_number": phoneNumberController.text,
         "Name": nameController.text,
-        "Role": "1",
+        "Role": "2",
       });
       print(response.body);
       if (response.statusCode == 200) {

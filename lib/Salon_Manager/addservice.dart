@@ -1,43 +1,33 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:demo/CommonWidget/APIConst.dart';
 import 'package:demo/Salon_Manager/SalonManagerDashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart ' as http;
+
+
 class addservice extends StatefulWidget {
   @override
   _AddServiceScreenState createState() => _AddServiceScreenState();
 }
-void _showSuccessPopup(BuildContext context){
-  showDialog(context: context,
-      builder: (BuildContext context){
-        return AlertDialog(
-          title: Text("Success"),
-          content: Text("Details Saved Successfully!"),
-          actions: [
-            TextButton(onPressed: (){
-              Navigator.pop(context);
-            }, child: Text("Cancel")
-            ),
-            TextButton(onPressed:(){
-              Navigator.pop(context);
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) => Salonmanagerdashboard()),
-                      (route) => false);
-
-            } , child: Text("OK"))
-          ],
-
-        );
-      }
-  );
-}
 
 class _AddServiceScreenState extends State<addservice> {
+  bool isLoading = false;
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _serviceNameController = TextEditingController();
-  final TextEditingController _stylistControroller = TextEditingController();
+  final TextEditingController _descriptionControroller = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _durationController = TextEditingController();
+  var vehicledata;
+  String? data;
+
   File? _image;
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -56,7 +46,13 @@ class _AddServiceScreenState extends State<addservice> {
         title: Text("Add Service"),
         backgroundColor: Colors.white,
       ),
-      body: Padding(
+      body:isLoading
+          ? Center(
+        child: CircularProgressIndicator(
+          color: Colors.green,
+        ),
+      )
+          :  Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -78,14 +74,14 @@ class _AddServiceScreenState extends State<addservice> {
               SizedBox(height: 16),
 
               TextFormField(
-                controller: _stylistControroller,
+                controller: _descriptionControroller,
                 decoration: InputDecoration(
-                  labelText:"Stylist Name ",
+                  labelText:"Description",
                   border: OutlineInputBorder(),
                 ),
                 validator: (value){
                   if (value==null||value.isEmpty){
-                    return"Please enter stylist name ";
+                    return"Please enter description";
                   }
                   return null;
                 }
@@ -144,9 +140,7 @@ class _AddServiceScreenState extends State<addservice> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Service added successfully!")),
-                    );
+                    uploadImageMedia(_image!);
                   }
                 },
                 child: Text("Save Service"),
@@ -160,4 +154,83 @@ class _AddServiceScreenState extends State<addservice> {
       ),
     );
   }
+
+  uploadImageMedia(File fileImage) async {
+    final form = _formKey.currentState;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (form!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+    final mimeTypeData =
+    lookupMimeType(fileImage.path, headerBytes: [0xFF, 0xD8])?.split('/');
+    final imageUploadRequest = http.MultipartRequest(
+      'POST',
+      Uri.parse("${ApiConst.base_url}salon/addservice.php"),
+    );
+
+    final file = await http.MultipartFile.fromPath('image', fileImage.path,
+        contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+
+    imageUploadRequest.headers['Cookie'] = ApiConst.cookie;
+    imageUploadRequest.headers['User-Agent'] = ApiConst.user_agent;
+
+    imageUploadRequest.fields['salon_id'] = prefs.getString('uid')!;
+    imageUploadRequest.fields['name'] = _serviceNameController.text;
+    imageUploadRequest.fields['description'] = _descriptionControroller.text;
+    imageUploadRequest.fields['price'] = _priceController.text;
+    imageUploadRequest.fields['duration'] = _durationController.text;
+    imageUploadRequest.fields['status'] = "1";
+    imageUploadRequest.files.add(file);
+    try {
+      isLoading = true;
+
+      final streamedResponse = await imageUploadRequest.send();
+
+      streamedResponse.stream.transform(utf8.decoder).listen((value) {
+        if (streamedResponse.statusCode == 200) {
+          setState(() {
+            isLoading = false;
+          });
+          vehicledata = jsonDecode(value);
+          if (vehicledata['error'] == false) {
+            Fluttertoast.showToast(
+                msg: vehicledata['message'].toString(),
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 2);
+            Navigator.of(context).pop();
+          } else {
+            Fluttertoast.showToast(
+                msg: vehicledata['message'].toString(),
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 2);
+          }
+          Fluttertoast.showToast(
+              msg: "Successfully",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 2);
+          print(streamedResponse.stream);
+          print(value);
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+          Fluttertoast.showToast(
+              msg: "Something went wrong",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 2);
+          print(value);
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
 }
