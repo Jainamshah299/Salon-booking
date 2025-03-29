@@ -81,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               trailing: Icon(Icons.arrow_forward_ios),
                               onTap: () {
                                 if (index == 3) {
-                                  _showLogoutPopup(context);// Show logout confirmation
+                                  _showLogoutPopup(context);
                                 }
                                 else if(index==2){
                                   Navigator.push(context, 

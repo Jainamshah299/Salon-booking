@@ -2,6 +2,9 @@ import 'package:demo/FeedbackScreen.dart';
 import 'package:demo/LoginScreen.dart';
 import 'package:demo/Salon_Manager/DetailScreen.dart';
 import 'package:demo/Salon_Manager/addservice.dart';
+import 'package:demo/Salon_Manager/salonappointment.dart';
+import 'package:demo/Salon_Manager/viewreview.dart';
+import 'package:demo/appointment.dart';
 import 'package:flutter/material.dart';
 
 class Salonmanagerdashboard extends StatelessWidget {
@@ -32,12 +35,13 @@ class SelectionScreen extends StatelessWidget {
       'name': 'APPOINTMENT',
       'description': 'VIEW APPOINTMENT',
       'color': Color(0xFFFAFFC5),
+      'route': salonappointment()
     },
     {
       'name': 'FEEDBACK',
       'description': 'MANAGE FEEDBACK',
       'color': Colors.black12,
-      'route' :RatingScreen()
+      'route' :viewreview()
     },
   ];
 

@@ -1,4 +1,5 @@
 
+import 'package:demo/Admin/AdminDashboardPage.dart';
 import 'package:demo/SalonDetailPage.dart';
 import 'package:demo/Salon_Manager/SalonManagerDashboard.dart';
 import 'package:demo/Slotbook.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: DashboardPage(),
+        home: Salonmanagerdashboard(),
         );
   }
 }
