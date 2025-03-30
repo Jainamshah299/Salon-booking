@@ -1,7 +1,9 @@
 import 'package:demo/FeedbackScreen.dart';
 import 'package:demo/LoginScreen.dart';
-import 'package:demo/Salon_Manager/DetailScreen.dart';
+import 'package:demo/Salon_Manager/AddStylistDetailScreen.dart';
 import 'package:demo/Salon_Manager/ManagerServiceListPage.dart';
+import 'package:demo/Salon_Manager/ManagerSlotListPage.dart';
+import 'package:demo/Salon_Manager/ManagerStylistListPage.dart';
 import 'package:demo/Salon_Manager/addservice.dart';
 import 'package:demo/Salon_Manager/salonappointment.dart';
 import 'package:demo/Salon_Manager/viewreview.dart';
@@ -21,16 +23,22 @@ class Salonmanagerdashboard extends StatelessWidget {
 class SelectionScreen extends StatelessWidget {
   final List<Map<String, dynamic>> stores = [
     {
-      'name': 'ADD DETAILS',
-      'description': 'ADD SALON NAME, ADDRESS',
+      'name': 'ADD Stylist',
+      'description': 'ADD Stylist NAME, experience',
       'color': Colors.pink.shade100,
-      'route': Detailscreen(),
+      'route': Managerstylistlistpage(),
     },
     {
       'name': 'ADD SERVICE',
       'description': 'ADD SERVICE, STYLIST,UPLOAD IMAGE, PRICE, DURATION',
       'color': Colors.lime.shade300,
       'route' : Managerservicelistpage(),
+    },
+    {
+      'name': 'ADD Slot',
+      'description': 'ADD SLOT',
+      'color': Colors.lime.shade300,
+      'route' : ManagerSlotListPage(),
     },
     {
       'name': 'APPOINTMENT',
