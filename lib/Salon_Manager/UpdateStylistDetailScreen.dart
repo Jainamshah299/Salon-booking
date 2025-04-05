@@ -37,7 +37,7 @@ class _AddStylistdetailscreenState extends State<UpdateStylistDetailScreen> {
     var userData = widget.stylistDetail; // Extract first user
     setState(() {
       isLoading = false;
-      stylishId = userData["stylish_id"] ?? "";
+      stylishId = userData["stylist_id"] ?? "";
       _nameController.text = userData["name"] ?? "";
       _experienceController.text = userData["experience"] ?? "";
       _specialityController.text = userData["speciality"] ?? "";
@@ -120,19 +120,19 @@ class _AddStylistdetailscreenState extends State<UpdateStylistDetailScreen> {
 
   Future<void> _submit() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    print(prefs.getString('uid')!);
     final form = formKey.currentState;
     if (form!.validate()) {
       setState(() {
         isLoading = true;
       });
-      final login_url = Uri.parse("${ApiConst.base_url}salon/updatestylist.php");
+      final login_url = Uri.parse("${ApiConst.base_url}salon/update_stylist.php");
       final response = await http.post(login_url, headers: {
         'Cookie': ApiConst.cookie,
         'User-Agent': ApiConst.user_agent
       }, body: {
         "salon_id": prefs.getString('uid')!,
-        "stylist_id": _nameController.text,
+        "stylist_id": stylishId,
         "name": _nameController.text,
         "experience": _experienceController.text,
         "speciality": _specialityController.text,

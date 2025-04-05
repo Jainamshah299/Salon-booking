@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:demo/CommonWidget/APIConst.dart';
 import 'package:demo/SalonDetailPage.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart ' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,17 +25,32 @@ class _HomePageState extends State<HomePage> {
     'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
     'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
   ];
-  var names = ["Glowup", "Belle Beauty", "Graceful Curls", "The Beauty Gallery" ,"name5","name6"];
-  var contact = ["9876543120", "23456789089", "2345678908", "2345678908","1234567890","154155600"];
-  var image = [
-    "assets/image/salonimage_1.jpg",
-    "assets/image/salonimage_1.jpg",
-    "assets/image/salonimage_1.jpg",
-    "assets/image/salonimage_1.jpg",
-    "assets/image/salonimage_1.jpg",
-    "assets/image/salonimage_1.jpg"
-  ];
+  String? data;
+  List<dynamic> salons = [];
+  bool isLoading = false;
 
+  void getData() async {
+    setState(() {
+      isLoading = true;
+    });
+    var url = Uri.parse("${ApiConst.base_url}user/user_fetch_salon.php");
+    var response = await http.get(
+      url,
+      headers: {'cookie': ApiConst.cookie, 'User-Agent': ApiConst.user_agent},
+    );
+    print(response.body);
+    var decodedData = jsonDecode(response.body);
+    setState(() {
+      salons = decodedData['salons'] ?? [];
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +75,13 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
+      body: isLoading
+          ? Center(
+        child: CircularProgressIndicator(
+          color: Colors.green,
+        ),
+      )
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -146,15 +171,13 @@ class _HomePageState extends State<HomePage> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: names.length,
+                itemCount: salons.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Salondetailpage()),
                     );
-
-
                   },
                     child: Container(
                       margin: EdgeInsets.only(top: 16, bottom: 16),
@@ -172,37 +195,49 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         children: [
                           ClipRRect(
-                            child: Image.asset(image[index], height: 200,
+                            child: Image.network("${ApiConst.base_url+salons[index]['dp']}", height: 200,
                               width: double.infinity, fit: BoxFit.fill,),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                names[index],
-                                style:
-                                TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                contact[index],
-                                style:
-                                TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "njshc",
-                                style:
-                                TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              )
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      salons[index]['Name'],
+                                      style:
+                                      TextStyle(
+                                          fontSize: 20, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Phone: ${salons[index]['phone_number']}",
+                                      style:
+                                      TextStyle(
+                                          fontSize: 16, fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Address: ${salons[index]['address']}",
+                                      style:
+                                      TextStyle(
+                                          fontSize: 16, fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
 
                         ],

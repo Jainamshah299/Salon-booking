@@ -9,6 +9,7 @@ import 'package:demo/Salon_Manager/salonappointment.dart';
 import 'package:demo/Salon_Manager/viewreview.dart';
 import 'package:demo/appointment.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Salonmanagerdashboard extends StatelessWidget {
   @override
@@ -106,7 +107,10 @@ class SelectionScreen extends StatelessWidget {
                             child: Text("Cancel")
                         ),
                         TextButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              final pref = await SharedPreferences.getInstance();
+                              await pref.clear();
+                              await pref.setBool('seen', true);
                               Navigator.pop(context);
                               Navigator.pushAndRemoveUntil(
                                   context,

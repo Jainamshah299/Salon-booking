@@ -175,7 +175,7 @@ class _ManagerstylistlistpageState extends State<Managerstylistlistpage> {
                                     children: [
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                        MainAxisAlignment.start,
                                         children: [
                                           Text(
                                             stylist[index]['name'],
@@ -189,13 +189,10 @@ class _ManagerstylistlistpageState extends State<Managerstylistlistpage> {
                                       SizedBox(height: 5),
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                        MainAxisAlignment.start,
                                         children: [
-                                          Icon(Icons.ev_station,
-                                              size: 16),
-                                          SizedBox(width: 5),
                                           Text(
-                                            "Duration ${stylist[index]['duration']}",
+                                            "Experience: ${stylist[index]['experience']}",
                                             style:
                                             TextStyle(fontSize: 14),
                                           ),
@@ -204,10 +201,10 @@ class _ManagerstylistlistpageState extends State<Managerstylistlistpage> {
                                       SizedBox(height: 5),
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                        MainAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "₹ ${stylist[index]['price']}",
+                                            "Speciality: ${stylist[index]['speciality']}",
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
