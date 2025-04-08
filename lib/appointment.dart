@@ -1,55 +1,51 @@
+import 'dart:convert';
+
+import 'package:demo/CommonWidget/APIConst.dart';
 import 'package:demo/FeedbackScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart ' as http;
 
-void main() {
-  runApp(appointment());
-}
-
-class appointment extends StatelessWidget {
+class BookingHistoryScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: BookingHistoryScreen(),
-    );
-  }
+  State<BookingHistoryScreen> createState() => _BookingHistoryScreenState();
 }
 
-class BookingHistoryScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> bookings = [
-    {
-      'title':'Salon Name',
-      'service': 'Haircut & Styling',
-      'date': 'March 5, 2025',
-      'time': '3:00 PM',
-      'icon': Icons.cut,
-      'status':"completed",
-    },
-    {
-      'title':'Salon Name',
-      'service': 'Facial Treatment',
-      'date': 'March 2, 2025',
-      'time': '1:30 PM',
-      'icon': Icons.spa,
-      'status':"pending",
-    },
-    {
-      'title':'Salon Name',
-      'service': 'Manicure & Pedicure',
-      'date': 'February 28, 2025',
-      'time': '11:00 AM',
-      'icon': Icons.self_improvement,
-      'status':"pending",
-    },
-    {
-      'title':'Salon Name',
-      'service': 'Hair Color',
-      'date': 'February 25, 2025',
-      'time': '2:00 PM',
-      'icon': Icons.brush,
-      'status':"pending",
-    },
-  ];
+class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
+  String? data;
+  String? userID;
+  String? serviceID;
+  List<dynamic> booking = [];
+  bool isLoading = false;
+  var userData;
+
+  void getData() async {
+    SharedPreferences setpreference =
+    await SharedPreferences.getInstance();
+
+    setState(() {
+      userID = setpreference.getString('uid');
+      isLoading = true;
+    });
+    var url = Uri.parse("${ApiConst.base_url}user/fetch_booking.php");
+    var response = await http.post(
+      url,
+      headers: {'cookie': ApiConst.cookie, 'User-Agent': ApiConst.user_agent},
+      body: {'user_id':  userID,},
+    );
+    print(response.body);
+    var decodedData = jsonDecode(response.body);
+    setState(() {
+      booking = decodedData['data'] ?? [];
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,21 +54,25 @@ class BookingHistoryScreen extends StatelessWidget {
         title: Text('Booking History'),
         backgroundColor: Colors.white,
       ),
-      body: Padding(
+      body:isLoading
+          ? Center(
+        child: CircularProgressIndicator(
+          color: Colors.green,
+        ),
+      )
+          : Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
-          itemCount: bookings.length,
+          itemCount: booking.length,
           itemBuilder: (context, index) {
-            final booking = bookings[index];
             return Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               elevation: 3,
               margin: EdgeInsets.only(bottom: 12),
               child: ListTile(
-                leading: Icon(booking['icon'], color: Colors.pinkAccent, size: 30),
-                title: Text(booking['title'], style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("${booking['date']} • ${booking['time']}"),
-                trailing: booking['status'] == "completed" ? ElevatedButton(
+                title: Text(booking[index]['totalamount'], style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text("${booking[index]['timestamp']}"),
+                trailing: booking[index]['status'] == "2" ? ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -83,7 +83,7 @@ class BookingHistoryScreen extends StatelessWidget {
                   },
 
                   child: Text("Give Feedback"),
-                ):  booking['status'] == "pending" ? ElevatedButton(
+                ):  booking[index]['status'] == "0" ? ElevatedButton(
                   onPressed: () {
                   },
                   style: ElevatedButton.styleFrom(

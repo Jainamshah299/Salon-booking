@@ -1,31 +1,70 @@
+import 'dart:convert';
+
+import 'package:demo/CommonWidget/APIConst.dart';
 import 'package:demo/Slotbook.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart ' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Salondetailpage extends StatefulWidget {
-  const Salondetailpage({super.key});
+  var salonDetail;
+  Salondetailpage({super.key, required this.salonDetail});
 
   @override
   State<Salondetailpage> createState() => _SalondetailpageState();
 }
 
 class _SalondetailpageState extends State<Salondetailpage> {
-  final List<String> service = ["Haircuts", "Shaving", "Facial", "Massage"];
-  final List<String> image = [
-    "assets/image/Rectangle_3.png",
-    "assets/image/beard.png",
-    "assets/image/Rectangle_3.png",
-    "assets/image/beard.png"
-  ];
-  final List<int> price = [200, 150, 300, 500];
+  String? data;
+  String? userID;
+  String? serviceID;
+  List<dynamic> service = [];
+  bool isLoading = false;
+  var userData;
+
+  void getData() async {
+    SharedPreferences setpreference =
+    await SharedPreferences.getInstance();
+
+    setState(() {
+      userID = setpreference.getString('uid');
+      print(userID);
+      userData = widget.salonDetail;
+      isLoading = true;
+    });
+    var url = Uri.parse("${ApiConst.base_url}user/user_fetch_service.php");
+    var response = await http.post(
+      url,
+      headers: {'cookie': ApiConst.cookie, 'User-Agent': ApiConst.user_agent},
+      body: {'salon_id':  userData["id"] ?? "",},
+    );
+    print(response.body);
+    var decodedData = jsonDecode(response.body);
+    setState(() {
+      service = decodedData['services'] ?? [];
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
 
   int? selectedServiceIndex;
+  String? totalPrice;
 
   @override
   Widget build(BuildContext context) {
-    int totalPrice = selectedServiceIndex != null ? price[selectedServiceIndex!] : 0;
-
     return Scaffold(
-      body: Column(
+      body:  isLoading
+          ? Center(
+        child: CircularProgressIndicator(
+          color: Colors.green,
+        ),
+      )
+          : Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
@@ -33,8 +72,8 @@ class _SalondetailpageState extends State<Salondetailpage> {
                 children: [
                   Stack(
                     children: [
-                      Image.asset(
-                        'assets/image/aesthetic_salon.jpg',
+                      Image.network(
+                        "${ApiConst.base_url+userData['dp']}",
                         width: double.infinity,
                         fit: BoxFit.cover,
                         height: 306,
@@ -43,26 +82,35 @@ class _SalondetailpageState extends State<Salondetailpage> {
                         left: 10,
                         bottom: 10,
                         child: Text(
-                          "Woodlands Hill Salon",
+                          userData['Name'],
                           style: TextStyle(color: Colors.white, fontSize: 24),
                         ),
                       )
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  Column(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.call, color: Colors.grey, size: 30),
-                        onPressed: () {},
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Phone: ${userData['phone_number']}",
+                            style:
+                            TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.normal),
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        icon: Icon(Icons.location_on, color: Colors.grey, size: 30),
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.share, color: Colors.grey, size: 30),
-                        onPressed: () {},
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Address: ${userData['address']}",
+                            style:
+                            TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.normal),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -72,17 +120,19 @@ class _SalondetailpageState extends State<Salondetailpage> {
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       return ListTile(
-                        leading: Image.asset(
-                          image[index],
+                        leading: Image.network(
+                          ApiConst.base_url+service[index]['image'],
                           fit: BoxFit.fill,
                           width: 50,
                           height: 50,
                         ),
-                        title: Text(service[index]),
-                        subtitle: Text("₹${price[index]}"),
+                        title: Text(service[index]['name']),
+                        subtitle: Text("₹${service[index]['price']}"),
                         trailing: ElevatedButton(
                           onPressed: () {
                             setState(() {
+                              serviceID = service[index]['service_id'];
+                              totalPrice = service[index]['price'].toString();
                               selectedServiceIndex =
                               selectedServiceIndex == index ? null : index;
                             });
@@ -118,7 +168,12 @@ class _SalondetailpageState extends State<Salondetailpage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Slotbook()),
+                        MaterialPageRoute(builder: (context) => Slotbook(
+                          salonId: userData["id"],
+                          serviceId: serviceID,
+                          totalPrice: totalPrice,
+                          userId: userID,
+                        )),
                       );
                     },
                     child: Text(

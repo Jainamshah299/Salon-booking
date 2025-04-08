@@ -79,7 +79,7 @@ void _showSuccessPopup(BuildContext context){
             TextButton(onPressed:(){
               Navigator.pop(context);
               Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) => appointment()),
+                  MaterialPageRoute(builder: (context) => BookingHistoryScreen()),
                       (route) => false);
 
             } , child: Text("OK"))

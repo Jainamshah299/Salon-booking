@@ -14,7 +14,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   List<Widget> listOfPage = [
     HomePage(),
-    appointment(),
+    BookingHistoryScreen(),
     ProfilePage(),
   ];
 

@@ -1,34 +1,128 @@
-import 'package:demo/Payment.dart';
+import 'dart:convert';
+import 'package:demo/CommonWidget/APIConst.dart';
 import 'package:demo/dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Slotbook extends StatefulWidget {
+  final String? salonId;
+  final String? totalPrice;
+  final String? serviceId;
+  final String? userId;
+
+  const Slotbook({
+    Key? key,
+    required this.salonId,
+    required this.serviceId,
+    required this.totalPrice,
+    this.userId = "1", // temporary static userId
+  }) : super(key: key);
+
   @override
   _SlotbookState createState() => _SlotbookState();
 }
 
 class _SlotbookState extends State<Slotbook> {
   String? selectedStylist;
-  DateTime? selectedDate;
-  TimeOfDay? selectedTime;
+  String? selectedStylistId;
+
+  String? selectedSlot;
+  String? selectedSlotId;
+
+  List<Map<String, String>> stylists = [];
+  List<Map<String, String>> slots = [];
+
   String? selectedPaymentMethod;
 
   final _formKey = GlobalKey<FormState>();
   String? cardNumber, expiryDate, cvv;
 
-  // Function to validate inputs
-  void _validateAndProceed() {
-    if (selectedStylist == null || selectedDate == null || selectedTime == null || selectedPaymentMethod == null) {
-      _showValidationPopup();
-    } else if (selectedPaymentMethod == "Online" && !_formKey.currentState!.validate()) {
-      _showValidationPopup(message: "Please enter valid card details.");
-    } else {
-      _showConfirmationPopup();
+  @override
+  void initState() {
+    super.initState();
+    fetchStylistsAndSlots();
+  }
+
+  Future<void> fetchStylistsAndSlots() async {
+    await fetchStylists();
+    await fetchSlots();
+  }
+
+  Future<void> fetchStylists() async {
+    final url = Uri.parse("${ApiConst.base_url}user/user_fetch_stylist.php");
+    final response = await http.post(url,
+        headers: {'cookie': ApiConst.cookie, 'User-Agent': ApiConst.user_agent},
+        body: {  'salon_id': widget.salonId ?? '',});
+
+    final data = json.decode(response.body);
+    print(response.body);
+    if (!data['error']) {
+      setState(() {
+        stylists = List<Map<String, String>>.from(data['stylists'].map<Map<String, String>>((s) => {
+          "stylist_id": s["stylist_id"].toString(),
+          "name": s["name"].toString(),
+        }));
+      });
     }
   }
 
-  // Function to show validation popup
-  void _showValidationPopup({String message = "Please select all required details to proceed."}) {
+  Future<void> fetchSlots() async {
+    final url = Uri.parse("${ApiConst.base_url}user/user_fetch_slot.php");
+    final response = await http.post(url,
+        headers: {'cookie': ApiConst.cookie, 'User-Agent': ApiConst.user_agent},
+        body: {"salon_id": widget.salonId ?? ""});
+
+    final data = json.decode(response.body);
+    if (!data['error']) {
+      setState(() {
+        slots = List<Map<String, String>>.from(data['slots'].map<Map<String, String>>((slot) => {
+          "id": slot["slot_id"].toString(),
+          "display": "${slot["date"]} (${slot["start_time"]} - ${slot["end_time"]})",
+        }));
+      });
+    }
+  }
+
+  void _validateAndProceed() {
+    if (selectedStylistId == null ||
+        selectedSlotId == null ||
+        selectedPaymentMethod == null) {
+      _showValidationPopup();
+    } else if(selectedPaymentMethod == "Cash"){
+      _submitBooking();
+    } else if (selectedPaymentMethod == "Online" &&
+        !_formKey.currentState!.validate()) {
+      _showValidationPopup(message: "Please enter valid card details.");
+    } else {
+      _submitBooking();
+    }
+  }
+
+  Future<void> _submitBooking() async {
+    final url = Uri.parse("${ApiConst.base_url}user/add_booking.php");
+
+    final response = await http.post(url, headers: {
+      'cookie': ApiConst.cookie,
+      'User-Agent': ApiConst.user_agent
+    }, body: {
+      "user_id": widget.userId ?? "1",
+      "service_id": widget.serviceId ?? "",
+      "stylist_id": selectedStylistId ?? "",
+      "slot_id": selectedSlotId ?? "",
+      "totalamount": widget.totalPrice ?? "",
+      "status": "Pending",
+    });
+print(response.body);
+    final data = json.decode(response.body);
+    if (!data["error"]) {
+      _showConfirmationPopup();
+    } else {
+      _showValidationPopup(message: data["message"] ?? "Booking failed");
+    }
+  }
+
+  void _showValidationPopup(
+      {String message = "Please select all required details to proceed."}) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -36,15 +130,12 @@ class _SlotbookState extends State<Slotbook> {
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("OK"),
-          ),
+              onPressed: () => Navigator.pop(context), child: Text("OK")),
         ],
       ),
     );
   }
 
-  // Function to show confirmation popup
   void _showConfirmationPopup() {
     showDialog(
       context: context,
@@ -55,12 +146,10 @@ class _SlotbookState extends State<Slotbook> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DashboardPage(),
-                ),
-              );
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => DashboardPage()),
+                      (Route<dynamic> route) => false);
             },
             child: Text("OK"),
           ),
@@ -81,89 +170,48 @@ class _SlotbookState extends State<Slotbook> {
                 children: [
                   _buildHeader(),
                   SizedBox(height: 20),
-
                   _buildSelectionCard(
                     title: "Select Stylist",
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         isExpanded: true,
                         hint: Text("Choose a stylist"),
-                        value: selectedStylist,
-                        items: ["Salim", "Ashim", "Alim", "Jawed"]
-                            .map((stylist) => DropdownMenuItem(
-                          value: stylist,
-                          child: Text(stylist),
-                        ))
-                            .toList(),
+                        value: selectedStylistId,
+                        items: stylists.map((stylist) {
+                          return DropdownMenuItem(
+                            value: stylist["id"],
+                            child: Text(stylist["name"]!),
+                          );
+                        }).toList(),
                         onChanged: (value) {
                           setState(() {
-                            selectedStylist = value;
+                            selectedStylistId = value;
                           });
                         },
                       ),
                     ),
                   ),
-
                   _buildSelectionCard(
-                    title: "Select Date",
-                    child: TextButton(
-                      onPressed: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime.now().add(Duration(days: 5)),
-                        );
-                        if (pickedDate != null) {
+                    title: "Select Slot",
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        hint: Text("Choose a slot"),
+                        value: selectedSlotId,
+                        items: slots.map((slot) {
+                          return DropdownMenuItem(
+                            value: slot["id"],
+                            child: Text(slot["display"]!),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
                           setState(() {
-                            selectedDate = pickedDate;
+                            selectedSlotId = value;
                           });
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            selectedDate != null
-                                ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
-                                : "Select the date",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          Icon(Icons.calendar_today, color: Colors.purple),
-                        ],
+                        },
                       ),
                     ),
                   ),
-
-                  _buildSelectionCard(
-                    title: "Select Time",
-                    child: TextButton(
-                      onPressed: () async {
-                        TimeOfDay? pickedTime = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        if (pickedTime != null) {
-                          setState(() {
-                            selectedTime = pickedTime;
-                          });
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            selectedTime != null
-                                ? selectedTime!.format(context)
-                                : "Select the time",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          Icon(Icons.access_time, color: Colors.purple),
-                        ],
-                      ),
-                    ),
-                  ),
-
                   _buildSelectionCard(
                     title: "Select Payment Method",
                     child: Column(
@@ -172,32 +220,24 @@ class _SlotbookState extends State<Slotbook> {
                           title: Text("Cash"),
                           value: "Cash",
                           groupValue: selectedPaymentMethod,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedPaymentMethod = value;
-                            });
-                          },
+                          onChanged: (value) =>
+                              setState(() => selectedPaymentMethod = value),
                         ),
                         RadioListTile<String>(
                           title: Text("Online Payment"),
                           value: "Online",
                           groupValue: selectedPaymentMethod,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedPaymentMethod = value;
-                            });
-                          },
+                          onChanged: (value) =>
+                              setState(() => selectedPaymentMethod = value),
                         ),
                       ],
                     ),
                   ),
-
-                  if (selectedPaymentMethod == "Online") _buildCardDetailsForm(),
-
+                  if (selectedPaymentMethod == "Online")
+                    _buildCardDetailsForm(),
                   SizedBox(height: 30),
-
                   GestureDetector(
-                    onTap: _validateAndProceed,
+                    onTap: _submitBooking,
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 16),
                       padding: EdgeInsets.all(12),
@@ -235,7 +275,8 @@ class _SlotbookState extends State<Slotbook> {
       child: Center(
         child: Text(
           "Book Your Slot",
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
     );
@@ -249,13 +290,21 @@ class _SlotbookState extends State<Slotbook> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, spreadRadius: 2, offset: Offset(0, 3)),
+          BoxShadow(
+              color: Colors.black12,
+              blurRadius: 6,
+              spreadRadius: 2,
+              offset: Offset(0, 3)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.purple)),
+          Text(title,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.purple)),
           SizedBox(height: 8),
           child,
         ],
@@ -271,25 +320,31 @@ class _SlotbookState extends State<Slotbook> {
         child: Column(
           children: [
             TextFormField(
-              decoration: InputDecoration(labelText: "Card Number", border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: "Card Number", border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
               maxLength: 16,
-              validator: (value) => value!.length != 16 ? "Enter a valid card number" : null,
+              validator: (value) =>
+                  value!.length != 16 ? "Enter a valid card number" : null,
               onSaved: (value) => cardNumber = value,
             ),
             SizedBox(height: 10),
             TextFormField(
-              decoration: InputDecoration(labelText: "Expiry Date (MM/YY)", border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: "Expiry Date (MM/YY)",
+                  border: OutlineInputBorder()),
               keyboardType: TextInputType.datetime,
               validator: (value) => value!.isEmpty ? "Enter expiry date" : null,
               onSaved: (value) => expiryDate = value,
             ),
             SizedBox(height: 10),
             TextFormField(
-              decoration: InputDecoration(labelText: "CVV", border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: "CVV", border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
               maxLength: 3,
-              validator: (value) => value!.length != 3 ? "Enter valid CVV" : null,
+              validator: (value) =>
+                  value!.length != 3 ? "Enter valid CVV" : null,
               onSaved: (value) => cvv = value,
             ),
           ],
