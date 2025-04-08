@@ -18,36 +18,32 @@ class appointment extends StatelessWidget {
 class BookingHistoryScreen extends StatelessWidget {
   final List<Map<String, dynamic>> bookings = [
     {
-      'title':'Salon Name',
+      'title': 'Salon Name',
       'service': 'Haircut & Styling',
       'date': 'March 5, 2025',
       'time': '3:00 PM',
-      'icon': Icons.cut,
-      'status':"completed",
+      'status': "completed",
     },
     {
-      'title':'Salon Name',
+      'title': 'Salon Name',
       'service': 'Facial Treatment',
       'date': 'March 2, 2025',
       'time': '1:30 PM',
-      'icon': Icons.spa,
-      'status':"pending",
+      'status': "pending",
     },
     {
-      'title':'Salon Name',
+      'title': 'Salon Name',
       'service': 'Manicure & Pedicure',
       'date': 'February 28, 2025',
       'time': '11:00 AM',
-      'icon': Icons.self_improvement,
-      'status':"pending",
+      'status': "pending",
     },
     {
-      'title':'Salon Name',
+      'title': 'Salon Name',
       'service': 'Hair Color',
       'date': 'February 25, 2025',
       'time': '2:00 PM',
-      'icon': Icons.brush,
-      'status':"pending",
+      'status': "pending",
     },
   ];
 
@@ -57,6 +53,7 @@ class BookingHistoryScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Booking History'),
         backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -69,10 +66,20 @@ class BookingHistoryScreen extends StatelessWidget {
               elevation: 3,
               margin: EdgeInsets.only(bottom: 12),
               child: ListTile(
-                leading: Icon(booking['icon'], color: Colors.pinkAccent, size: 30),
-                title: Text(booking['title'], style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("${booking['date']} • ${booking['time']}"),
-                trailing: booking['status'] == "completed" ? ElevatedButton(
+                title: Text(
+                  booking['title'],
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(booking['service'], style: TextStyle(color: Colors.grey[700])),
+                    SizedBox(height: 4),
+                    Text("${booking['date']} • ${booking['time']}"),
+                  ],
+                ),
+                trailing: booking['status'] == "completed"
+                    ? ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -81,17 +88,18 @@ class BookingHistoryScreen extends StatelessWidget {
                       ),
                     );
                   },
-
                   child: Text("Give Feedback"),
-                ):  booking['status'] == "pending" ? ElevatedButton(
-                  onPressed: () {
-                  },
+                )
+                    : booking['status'] == "pending"
+                    ? ElevatedButton(
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white54 ,
+                    backgroundColor: Colors.white54,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: Text("Pending"),
-                ): null,
+                )
+                    : null,
               ),
             );
           },
@@ -100,5 +108,3 @@ class BookingHistoryScreen extends StatelessWidget {
     );
   }
 }
-
-

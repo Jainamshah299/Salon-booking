@@ -1,6 +1,9 @@
+import 'package:demo/editprofilescreen.dart';
 import 'package:demo/profileaboutsalon.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/LoginScreen.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -18,6 +21,17 @@ class _ProfilePageState extends State<ProfilePage> {
     Icons.logout
   ];
 
+  File? _profileImage;
+
+  Future<void> _pickImage() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() {
+        _profileImage = File(picked.path);
+      });
+    }
+  }
+
   void _showLogoutPopup(BuildContext context) {
     showDialog(
       context: context,
@@ -26,16 +40,16 @@ class _ProfilePageState extends State<ProfilePage> {
         content: Text("Are you sure you want to log out?"),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // Close dialog
+            onPressed: () => Navigator.pop(context),
             child: Text("Cancel"),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close popup
+              Navigator.pop(context);
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => LoginScreen()),
-                    (route) => false, // Clears navigation stack
+                    (route) => false,
               );
             },
             child: Text("Logout", style: TextStyle(color: Colors.red)),
@@ -56,18 +70,46 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsets.all(20),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage('assets/image/logo.jpeg'),
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : AssetImage('assets/image/logo.jpeg') as ImageProvider,
+                      child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 12,
+                          child: Icon(Icons.edit, size: 15),
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'User Name',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => EditProfilePage()),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'User Name',
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Icon(Icons.edit, size: 18, color: Colors.grey),
+                            ],
+                          ),
                         ),
                         const Divider(),
                         ListView.builder(
@@ -82,10 +124,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               onTap: () {
                                 if (index == 3) {
                                   _showLogoutPopup(context);
-                                }
-                                else if(index==2){
-                                  Navigator.push(context, 
-                                  MaterialPageRoute(builder: (context)=>AboutPage()),
+                                } else if (index == 2) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => AboutPage()),
                                   );
                                 }
                               },
@@ -103,9 +145,4 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-
 }
-
-
-
-
