@@ -1,3 +1,7 @@
+import 'package:demo/Admin/AdminDashboardPage.dart';
+import 'package:demo/HomePage.dart';
+import 'package:demo/Salon_Manager/SalonManagerDashboard.dart';
+import 'package:demo/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/Screen.dart';
 
@@ -17,7 +21,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: SplashScreen(),
+        home:DashboardPage(),
         );
   }
 }

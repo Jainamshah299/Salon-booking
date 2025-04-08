@@ -53,6 +53,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
       appBar: AppBar(
         title: Text('Booking History'),
         backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
       ),
       body:isLoading
           ? Center(
@@ -87,11 +88,12 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                   onPressed: () {
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white54 ,
+                    backgroundColor: Colors.white54,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: Text("Pending"),
-                ): null,
+                )
+                    : null,
               ),
             );
           },
@@ -100,5 +102,3 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
     );
   }
 }
-
-
