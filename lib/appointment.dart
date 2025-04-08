@@ -61,7 +61,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
           color: Colors.green,
         ),
       )
-          : Padding(
+          : booking.isNotEmpty ? Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
           itemCount: booking.length,
@@ -98,7 +98,10 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
             );
           },
         ),
-      ),
+      ):Center(
+          child: Text("No booking available",
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.bold))),
     );
   }
 }
