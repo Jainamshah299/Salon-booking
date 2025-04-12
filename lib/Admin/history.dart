@@ -1,109 +1,125 @@
+import 'dart:convert';
+
+import 'package:demo/CommonWidget/APIConst.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart ' as http;
 
-class historyscreen extends StatelessWidget {
-  final List<Map<String, dynamic>> bookingHistory = [
-    {
-      'username': 'Rahil',
-      'salonName': 'Luxury Salon & Spa',
-      'service': 'Haircut & Styling',
-      'date': 'March 15, 2025',
-      'time': '10:30 AM',
-      'status': 'Completed',
-    },
-    {
-      'username': 'Sahil',
-      'salonName': 'Elite Beauty Hub',
-      'service': 'Facial Treatment',
-      'date': 'March 20, 2025',
-      'time': '2:00 PM',
-      'status': 'Pending',
-    },
-    {
-      'username': 'Ajay',
-      'salonName': 'Glamour Touch',
-      'service': 'Manicure & Pedicure',
-      'date': 'March 22, 2025',
-      'time': '4:00 PM',
-      'status': 'Canceled',
-    },
-  ];
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Completed':
-        return Colors.green;
-      case 'Pending':
-        return Colors.orange;
-      case 'Canceled':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
+class historyscreen extends StatefulWidget {
+  @override
+  State<historyscreen> createState() => _historyscreenState();
+}
+
+class _historyscreenState extends State<historyscreen> {
+  String? data;
+
+  String? userID;
+
+  String? serviceID;
+
+  List<dynamic> booking = [];
+
+  bool isLoading = false;
+
+  var userData;
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
+  void getData() async {
+    SharedPreferences setpreference =
+    await SharedPreferences.getInstance();
+
+    setState(() {
+      userID = setpreference.getString('uid');
+      isLoading = true;
+    });
+    var url = Uri.parse("${ApiConst.base_url}admin/admin_fetch_booking.php");
+    var response = await http.get(
+      url,
+      headers: {'cookie': ApiConst.cookie, 'User-Agent': ApiConst.user_agent},
+    );
+    print(response.body);
+    var decodedData = jsonDecode(response.body);
+    setState(() {
+      booking = decodedData['bookings'] ?? [];
+      isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Booking History")),
-      body: ListView.builder(
-        padding: EdgeInsets.all(16),
-        itemCount: bookingHistory.length,
+      body: isLoading
+          ? Center(
+        child: CircularProgressIndicator(
+          color: Colors.green,
+        ),
+      )
+          :ListView.builder(
+        padding: EdgeInsets.only(left: 16,right: 16),
+        itemCount: booking.length,
         itemBuilder: (context, index) {
-          final booking = bookingHistory[index];
-
           return Card(
+            color: Color(0xFFF5F5F5),
+            margin: EdgeInsets.only(bottom: 16.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             elevation: 4,
-            margin: EdgeInsets.only(bottom: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: ListTile(
-              contentPadding: EdgeInsets.all(16),
-              title: Text(
-                "${booking['username']}",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              trailing: Text("${booking['salonName']}"),
-              subtitle: Column(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 4),
-                  Text("Service: ${booking['service']}"),
-                  Text("Date: ${booking['date']}"),
-                  Text("Time: ${booking['time']}"),
-                  SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Icon(Icons.circle, color: _getStatusColor(booking['status']), size: 12),
-                      SizedBox(width: 6),
-                      Text(
-                        booking['status'],
-                        style: TextStyle(color: _getStatusColor(booking['status']), fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  Text(
+                    "User Name: ${booking[index]['user_name'] ?? 'Unknown username'}",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                  Text(
+                    "Service: ${booking[index]['service_name']}",
+                    style: TextStyle(
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "Amount: ${booking[index]['totalamount']}",
+                    style: TextStyle(
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "Date: ${booking[index]['timestamp']}",
+                    style: TextStyle(
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    booking[index]['status'] == '0'
+                        ? 'Pending'
+                        :booking[index]['status'] == '1'
+                        ? 'Accepted'
+                        : 'Rejected',
+                    style: TextStyle(
+                      color: booking[index]['status'] == '0'
+                          ? Colors.orange
+                          : booking[index]['status'] == '1'
+                          ? Colors.green
+                          : Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text("Booking Details"),
-                    content: Text(
-                      "User:${booking['username']}\n"
-                      "Salon: ${booking['salonName']}\n"
-                          "Service: ${booking['service']}\n"
-                          "Date: ${booking['date']}\n"
-                          "Time: ${booking['time']}\n"
-                          "Status: ${booking['status']}",
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text("Close"),
-                      ),
-                    ],
-                  ),
-                );
-              },
             ),
           );
         },

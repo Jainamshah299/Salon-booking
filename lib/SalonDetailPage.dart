@@ -121,7 +121,7 @@ class _SalondetailpageState extends State<Salondetailpage> {
                     itemBuilder: (context, index) {
                       return ListTile(
                         leading: Image.network(
-                          ApiConst.base_url+service[index]['image'],
+                         service[index]['image'],
                           fit: BoxFit.fill,
                           width: 50,
                           height: 50,

@@ -14,8 +14,6 @@ class Payment extends StatefulWidget {
 }
 
 class _PaymentState extends State<Payment> {
-  final icons =[Icons.payment,Icons.money];
-  
   String? selectedPaymentMethod;
   String? data;
   String? userID;
@@ -32,7 +30,7 @@ class _PaymentState extends State<Payment> {
       userID = setpreference.getString('uid');
       isLoading = true;
     });
-    var url = Uri.parse("${ApiConst.base_url}user/fetch_booking.php");
+    var url = Uri.parse("${ApiConst.base_url}user/fetch_payment.php");
     var response = await http.post(
       url,
       headers: {'cookie': ApiConst.cookie, 'User-Agent': ApiConst.user_agent},
@@ -41,9 +39,15 @@ class _PaymentState extends State<Payment> {
     print(response.body);
     var decodedData = jsonDecode(response.body);
     setState(() {
-      payment = decodedData['data'] ?? [];
+      payment = decodedData['payments'] ?? [];
       isLoading = false;
     });
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
   }
 
 
@@ -63,14 +67,56 @@ class _PaymentState extends State<Payment> {
         padding: EdgeInsets.all(10),
         itemCount: payment.length,
         itemBuilder: (context,index){
-          return ListTile(
-            leading:Icon(icons[index]),
-            title: Text(payment[index]),
-            onTap: (){
-              setState(() {
-                selectedPaymentMethod =payment[index];
-              });
-            },
+          return Container(
+            padding: EdgeInsets.all(12),
+            margin: EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  backgroundColor: Color(0xff66023c),
+                  child: Text(
+                    payment[index]["user_id"][0].toString().toUpperCase(),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Payed amount: ${payment[index]["amount"]}",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "Date: ${payment[index]["timestamp"]}",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "Mode of payment: ${payment[index]["method"]}",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
         }
       ):Center(

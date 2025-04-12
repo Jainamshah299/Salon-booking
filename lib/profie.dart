@@ -1,9 +1,11 @@
+import 'package:demo/Payment.dart';
 import 'package:demo/editprofilescreen.dart';
 import 'package:demo/profileaboutsalon.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/LoginScreen.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,13 +15,15 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final List<String> title = ["Your Favourites", "Payments", "About", "Logout"];
+  final List<String> title = ["Edit Profile","Payments", "About", "Logout"];
   final List<IconData> icon = [
-    Icons.favorite_border,
+    Icons.person_pin,
     Icons.payment,
     Icons.info_outline,
     Icons.logout
   ];
+  String userName = "";
+
 
   File? _profileImage;
 
@@ -30,6 +34,19 @@ class _ProfilePageState extends State<ProfilePage> {
         _profileImage = File(picked.path);
       });
     }
+  }
+
+  getSelectedValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('uname')!;
+    });
+  }
+
+  @override
+  void initState() {
+    getSelectedValue();
+    super.initState();
   }
 
   void _showLogoutPopup(BuildContext context) {
@@ -66,28 +83,27 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            GestureDetector(
+              onTap: _pickImage,
+              child: CircleAvatar(
+                radius: 40,
+                backgroundImage: _profileImage != null
+                    ? FileImage(_profileImage!)
+                    : AssetImage('assets/image/logo.jpeg') as ImageProvider,
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 12,
+                    child: Icon(Icons.edit, size: 15),
+                  ),
+                ),
+              ),
+            ),
             Container(
               padding: EdgeInsets.all(20),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundImage: _profileImage != null
-                          ? FileImage(_profileImage!)
-                          : AssetImage('assets/image/logo.jpeg') as ImageProvider,
-                      child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 12,
-                          child: Icon(Icons.edit, size: 15),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,11 +119,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  'User Name',
+                                  userName,
                                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              Icon(Icons.edit, size: 18, color: Colors.grey),
                             ],
                           ),
                         ),
@@ -128,6 +143,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => AboutPage()),
+                                  );
+                                } else if (index == 1) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => Payment()),
                                   );
                                 }
                               },

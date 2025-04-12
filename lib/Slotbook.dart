@@ -111,6 +111,7 @@ class _SlotbookState extends State<Slotbook> {
       'User-Agent': ApiConst.user_agent
     }, body: {
       "user_id": widget.userId ?? "1",
+      "salon_id": widget.salonId ?? '',
       "service_id": widget.serviceId ?? "",
       "stylist_id": selectedStylistId ?? "",
       "slot_id": selectedSlotId ?? "",

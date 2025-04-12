@@ -1,3 +1,4 @@
+import 'package:demo/Admin/AdminPaymentList.dart';
 import 'package:demo/Admin/about.dart';
 import 'package:demo/Admin/complain.dart';
 import 'package:demo/Admin/history.dart';
@@ -41,6 +42,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
       'color': Color(0xffFBF3B9),
       'route': complainscreen(),
+    },
+    {
+      'name': 'View Payment',
+
+      'color': Color(0xffB7B1F2),
+      'route': AdminPaymentList(),
     },
   ];
   @override

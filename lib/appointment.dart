@@ -4,7 +4,7 @@ import 'package:demo/CommonWidget/APIConst.dart';
 import 'package:demo/FeedbackScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart ' as http;
+import 'package:http/http.dart' as http;
 
 class BookingHistoryScreen extends StatefulWidget {
   @override
@@ -73,27 +73,28 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
               child: ListTile(
                 title: Text(booking[index]['totalamount'], style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text("${booking[index]['timestamp']}"),
-                trailing: booking[index]['status'] == "2" ? ElevatedButton(
+                trailing: booking[index]['status'] == "1" ? ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RatingScreen(),
+                        builder: (context) => RatingScreen(salonID: booking[index]['salon_id'],),
                       ),
                     );
                   },
 
                   child: Text("Give Feedback"),
-                ):  booking[index]['status'] == "0" ? ElevatedButton(
+                ):  ElevatedButton(
                   onPressed: () {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white54,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
-                  child: Text("Pending"),
-                )
-                    : null,
+                  child: Text( booking[index]['status'] == '0'
+                      ? 'Pending'
+                      :  booking[index]['status'] == '1' ? 'Accepted': 'Rejected'),
+                ),
               ),
             );
           },
