@@ -25,6 +25,8 @@ class Slotbook extends StatefulWidget {
 class _SlotbookState extends State<Slotbook> {
   String? selectedStylist;
   String? selectedStylistId;
+  
+  bool isLoading = false;
 
   String? selectedSlot;
   String? selectedSlotId;
@@ -99,6 +101,9 @@ class _SlotbookState extends State<Slotbook> {
   }
 
   Future<void> _submitBooking() async {
+    setState(() {
+      isLoading = true;
+    });
     final url = Uri.parse("${ApiConst.base_url}user/add_booking.php");
 
     final response = await http.post(url, headers: {
@@ -113,6 +118,32 @@ class _SlotbookState extends State<Slotbook> {
       "status": "Pending",
     });
 print(response.body);
+    final data = json.decode(response.body);
+    if (!data["error"]) {
+      setState(() {
+        isLoading = true;
+      });
+      _submitPayment(data["booking_id"].toString());
+    } else {
+      _showValidationPopup(message: data["message"] ?? "Booking failed");
+    }
+  }
+
+  Future<void> _submitPayment(String bookingId) async {
+    final url = Uri.parse("${ApiConst.base_url}user/add_payment.php");
+
+    final response = await http.post(url, headers: {
+      'cookie': ApiConst.cookie,
+      'User-Agent': ApiConst.user_agent
+    }, body: {
+      "user_id": widget.userId ?? "1",
+      "booking_id":bookingId,
+      "amount":  widget.totalPrice ?? "",
+      "method": selectedPaymentMethod == "Cash" ? "Cash": "Online",
+      "transaction_id": selectedPaymentMethod == "Cash" ? "1" : "2",
+      "status": "Completed",
+    });
+    print(response.body);
     final data = json.decode(response.body);
     if (!data["error"]) {
       _showConfirmationPopup();
