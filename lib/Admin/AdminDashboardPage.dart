@@ -4,8 +4,10 @@ import 'package:demo/Admin/complain.dart';
 import 'package:demo/Admin/history.dart';
 import 'package:demo/Admin/salon.dart';
 import 'package:demo/Admin/user.dart';
+import 'package:demo/CommonWidget/EditProfileScreen.dart';
 import 'package:demo/LoginScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -50,6 +52,23 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       'route': AdminPaymentList(),
     },
   ];
+  String userName = "a";
+  String userEmail = "";
+
+  getSelectedValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('uname')!;
+      userEmail = prefs.getString('email')!;
+    });
+  }
+
+  @override
+  void initState() {
+    getSelectedValue();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -94,42 +113,80 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         ),
       ),
       drawer: Drawer(
-        child: ListView.builder(
-          itemCount: title.length,
-          itemBuilder: (context,index){
-            return ListTile(
-              leading: Icon(icon[index]),
-              title: Text(title[index]),
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: Color(0xff66023c)),
+              accountName: Text(
+                userName,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              accountEmail: Text(
+                userEmail,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Text(
+                  userName[0].toString().toUpperCase(),
+                  style: TextStyle(fontSize: 40.0),
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person_pin_outlined, color: Colors.red),
+              title: Text("Edit Profile"),
               onTap: (){
-                if(title[index]=='Logout'){
-                  showDialog(
-                      context: context,
-                      builder: (context)=>AlertDialog(
-                        title: Text("Logout"),
-                        content: Text("Are you sure want to logout?"),
-                        actions: [
-                          TextButton(onPressed:()=>Navigator.pop(context),
-                              child: Text("Cancel"),),
-                          TextButton(
-                              onPressed: (){
-                                Navigator.pop(context);
-                                Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context)=>LoginScreen()),
-                                    (route)=>false,
-                                );
-                              },
-                              child:Text("Logout") )
-                        ],
-                      ));
-                }else if(title[index] == 'About Us'){
-                  Navigator.push(
+                Navigator.push(
                     context,
-                  MaterialPageRoute(builder: (context)=>about()));
+                    MaterialPageRoute(builder: (context)=>EditProfileScreen()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.info_outline, color: Colors.red),
+              title: Text("About Us"),
+              onTap: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context)=>about()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout, color: Colors.red),
+              title: Text("Logout"),
+              onTap: (){
+                showDialog(
+                    context: context,
+                    builder:(context) =>AlertDialog(
+                      title: Text("Logout"),
+                      content: Text("Are you sure want to log out?"),
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text("Cancel")
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            final pref = await SharedPreferences.getInstance();
+                            await pref.clear();
+                            await pref.setBool('seen', true);
+                            Navigator.pop(context);
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginScreen()),
+                                  (route) => false,
+                            );
+                          },
+                          child: Text("Logout"),
 
-                }
-                }
+                        ),
 
-            );
-          }
+
+                      ],
+                    )) ;
+              },
+            ),
+          ],
         )
       ),
     );

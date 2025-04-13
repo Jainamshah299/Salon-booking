@@ -18,11 +18,11 @@ class _HomePageState extends State<HomePage> {
   int _current = 0;
   final CarouselSliderController _controller = CarouselSliderController();
   List<String> imgList = [
-    'https://www.canva.com/design/DAGelkY2vWQ/PM8Ju0R6sFl2faoQ-ZuEsg/edit',
+    'https://img.freepik.com/free-vector/flat-design-beauty-salon-sale-banner-template_23-2149672019.jpg',
     'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
     'https://img.freepik.com/free-vector/flat-design-beauty-salon-sale-banner-template_23-2149672019.jpg',
-    'https://www.canva.com/design/DAGelsYvazc/Ez23Y5fh6_RgzEJ9fEcPuQ/edit',
-    'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
+    'https://img.freepik.com/free-vector/flat-design-beauty-salon-sale-banner-template_23-2149672019.jpg',
+    'https://img.freepik.com/free-vector/flat-design-beauty-salon-sale-banner-template_23-2149672019.jpg',
     'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
   ];
   String? data;

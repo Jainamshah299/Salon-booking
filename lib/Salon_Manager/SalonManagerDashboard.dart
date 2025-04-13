@@ -1,3 +1,5 @@
+import 'package:demo/Admin/about.dart';
+import 'package:demo/CommonWidget/EditProfileScreen.dart';
 import 'package:demo/FeedbackScreen.dart';
 import 'package:demo/LoginScreen.dart';
 import 'package:demo/Salon_Manager/AddStylistDetailScreen.dart';
@@ -21,7 +23,12 @@ class Salonmanagerdashboard extends StatelessWidget {
   }
 }
 
-class SelectionScreen extends StatelessWidget {
+class SelectionScreen extends StatefulWidget {
+  @override
+  State<SelectionScreen> createState() => _SelectionScreenState();
+}
+
+class _SelectionScreenState extends State<SelectionScreen> {
   final List<Map<String, dynamic>> stores = [
     {
       'name': 'ADD Stylist',
@@ -54,6 +61,22 @@ class SelectionScreen extends StatelessWidget {
       'route' :viewreview()
     },
   ];
+  String userName = "a";
+  String userEmail = "";
+
+  getSelectedValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('uname')!;
+      userEmail = prefs.getString('email')!;
+    });
+  }
+
+  @override
+  void initState() {
+    getSelectedValue();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +115,42 @@ class SelectionScreen extends StatelessWidget {
       drawer: Drawer(
         child: Column(
           children: [
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: Color(0xff66023c)),
+              accountName: Text(
+                userName,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              accountEmail: Text(
+                userEmail,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Text(
+                  userName[0].toString().toUpperCase(),
+                  style: TextStyle(fontSize: 40.0),
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person_pin_outlined, color: Colors.red),
+              title: Text("Edit Profile"),
+              onTap: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context)=>EditProfileScreen()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.info_outline, color: Colors.red),
+              title: Text("About Us"),
+              onTap: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context)=>about()));
+              },
+            ),
             ListTile(
               leading: Icon(Icons.logout, color: Colors.red),
               title: Text("Logout"),
@@ -127,7 +186,6 @@ class SelectionScreen extends StatelessWidget {
                     )) ;
               },
             ),
-
           ],
         ),
       ),

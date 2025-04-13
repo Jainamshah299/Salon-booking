@@ -1,3 +1,4 @@
+import 'package:demo/CommonWidget/EditProfileScreen.dart';
 import 'package:demo/Payment.dart';
 import 'package:demo/editprofilescreen.dart';
 import 'package:demo/profileaboutsalon.dart';
@@ -149,6 +150,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                     context,
                                     MaterialPageRoute(builder: (context) => Payment()),
                                   );
+                                }else if (index == 0) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                                  ).whenComplete((){
+                                    getSelectedValue();
+                                  });
                                 }
                               },
                             );
